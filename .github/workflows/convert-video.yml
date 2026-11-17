@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'ctw_animation_realtime.avi' # Triggers only when this specific file updates
+  workflow_dispatch: # This adds a manual "Run Workflow" button in the Actions tab
 
 permissions:
   contents: write
