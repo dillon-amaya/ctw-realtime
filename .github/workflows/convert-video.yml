@@ -3,8 +3,9 @@ name: Convert AVI to MP4
 on:
   push:
     paths:
-      - 'ctw_animation_realtime.avi' # Triggers only when this specific file updates
-  workflow_dispatch: # This adds a manual "Run Workflow" button in the Actions tab
+      - 'ctw_animation_realtime.avi'
+      - 'ctw_animation_ccs_realtime.avi'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -19,12 +20,15 @@ jobs:
       - name: Install FFmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      - name: Convert AVI to MP4
-        # Uses standard web-safe encoding (H.264 video codec, YUV420P pixel format)
-        run: ffmpeg -y -i ctw_animation_realtime.avi -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -pix_fmt yuv420p -movflags +faststart ctw_animation_realtime.mp4
+      - name: Convert AVIs to MP4
+        # The pipe symbol (|) allows running multiple commands in one step
+        run: |
+          ffmpeg -y -i ctw_animation_realtime.avi -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -pix_fmt yuv420p -movflags +faststart ctw_animation_realtime.mp4
+          ffmpeg -y -i ctw_animation_ccs_realtime.avi -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -pix_fmt yuv420p -movflags +faststart ctw_animation_ccs_realtime.mp4
         
-      - name: Commit and Push MP4
+      - name: Commit and Push MP4s
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-convert AVI to MP4 for web playback"
-          file_pattern: 'ctw_animation_realtime.mp4'
+          commit_message: "Auto-convert AVIs to MP4 for web playback"
+          # Using a wildcard to grab both newly generated MP4 files
+          file_pattern: '*.mp4'
