@@ -21,8 +21,8 @@ jobs:
 
       - name: Convert AVI to MP4
         # Uses standard web-safe encoding (H.264 video codec, YUV420P pixel format)
-        run: ffmpeg -y -i ctw_animation_realtime.avi -c:v libx264 -pix_fmt yuv420p -movflags +faststart ctw_animation_realtime.mp4
-
+        run: ffmpeg -y -i ctw_animation_realtime.avi -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -pix_fmt yuv420p -movflags +faststart ctw_animation_realtime.mp4
+        
       - name: Commit and Push MP4
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
